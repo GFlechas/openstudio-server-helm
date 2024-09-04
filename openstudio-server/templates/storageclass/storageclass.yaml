@@ -16,9 +16,7 @@ parameters:
   kind: Managed
   storageaccounttype: StandardSSD_LRS
 {{- else }}
-provisioner: kubernetes.io/aws-ebs
-parameters:
-  type: gp3
+provisioner: rancher.io/local-path
 {{- end }}
 reclaimPolicy: Delete
 mountOptions:
