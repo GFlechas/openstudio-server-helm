@@ -1,4 +1,4 @@
-{{ if eq .Values.provider.name "aws" }}
+# Common Configuration
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -133,14 +133,13 @@ spec:
         k8s-app: metrics-server
     spec:
       containers:
-      - args:
-        - --cert-dir=/tmp
-        - --secure-port=4443
-        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-        - --kubelet-use-node-status-port
-        - --metric-resolution=15s
+      - name: metrics-server
         image: k8s.gcr.io/metrics-server/metrics-server:v0.6.2
         imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4443
+          name: https
+          protocol: TCP
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -148,11 +147,6 @@ spec:
             port: https
             scheme: HTTPS
           periodSeconds: 10
-        name: metrics-server
-        ports:
-        - containerPort: 4443
-          name: https
-          protocol: TCP
         readinessProbe:
           failureThreshold: 3
           httpGet:
@@ -180,6 +174,24 @@ spec:
       volumes:
       - emptyDir: {}
         name: tmp-dir
+      # Provider-Specific Configurations
+      {{ if eq .Values.provider.name "aws" }}
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --kubelet-use-node-status-port
+        - --metric-resolution=15s
+      {{ else }}
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --metric-resolution=15s
+        - --kubelet-insecure-tls
+      {{ end }}
 ---
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
@@ -196,4 +208,3 @@ spec:
     namespace: kube-system
   version: v1beta1
   versionPriority: 100
-{{ end }}
