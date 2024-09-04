@@ -2,22 +2,24 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: ssd
-{{ if eq .Values.provider.name "aws" }}
+{{- if eq .Values.provider.name "aws" }}
 provisioner: kubernetes.io/aws-ebs
 parameters:
   type: gp3
-{{ end }}
-{{ if eq .Values.provider.name "google" }}
+{{- else if eq .Values.provider.name "google" }}
 provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
-{{ end }}
-{{ if eq .Values.provider.name "azure" }}
+{{- else if eq .Values.provider.name "azure" }}
 provisioner: kubernetes.io/azure-disk
 parameters:
   kind: Managed
   storageaccounttype: StandardSSD_LRS
-{{ end }}
+{{- else }}
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3
+{{- end }}
 reclaimPolicy: Delete
 mountOptions:
   - debug
