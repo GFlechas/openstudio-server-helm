@@ -122,44 +122,47 @@ metadata:
   namespace: kube-system
   labels:
     app: cluster-autoscaler
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: cluster-autoscaler
-  template:
-    metadata:
-      labels:
-        app: cluster-autoscaler
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: '8085'
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: nodegroup
-                    operator: In
-                    values:
-                      - web-group
-      serviceAccountName: cluster-autoscaler
-      containers:
-        - image: registry.k8s.io/autoscaling/cluster-autoscaler:v1.26.6
-          name: cluster-autoscaler
-          resources:
-            limits:
-              cpu: 1000m
-              memory: 2Gi
-            requests:
-              cpu: 1000m
-              memory: 2Gi
-          imagePullPolicy: "Always"
-      volumes:
-        - name: ssl-certs
-          hostPath:
-            path: "/etc/ssl/certs/ca-bundle.crt"
+    replicas: 1
+    selector:
+      matchLabels:
+        app: cluster-autoscaler
+    template:
+      metadata:
+        labels:
+          app: cluster-autoscaler
+        annotations:
+          prometheus.io/scrape: 'true'
+          prometheus.io/port: '8085'
+      spec:
+        serviceAccountName: cluster-autoscaler
+        containers:
+          - name: cluster-autoscaler  # Ensure the container name is provided
+            image: registry.k8s.io/autoscaling/cluster-autoscaler:v1.26.6  # Ensure the image is provided
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 2Gi
+              requests:
+                cpu: 1000m
+                memory: 2Gi
+            command:
+              - ./cluster-autoscaler
+              - --v=4
+              - --stderrthreshold=info
+              - --cloud-provider=external
+              - --skip-nodes-with-local-storage=false
+              - --expander=least-waste
+              - --scale-down-unneeded-time=5m
+            volumeMounts:
+              - name: ssl-certs
+                mountPath: /etc/ssl/certs/ca-certificates.crt
+                readOnly: true
+            imagePullPolicy: "Always"
+        volumes:
+          - name: ssl-certs
+            hostPath:
+              path: "/etc/ssl/certs/ca-bundle.crt"  
       # Provider-Specific Configurations
       {{ if eq .Values.provider.name "aws" }}
       containers:
