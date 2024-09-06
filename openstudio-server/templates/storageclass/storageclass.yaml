@@ -19,7 +19,6 @@ parameters:
 provisioner: rancher.io/local-path
 parameters:
   nodePath: /data/ssd
-  pathPattern: "{{ .PVC.Namespace }}/{{ .PVC.Name }}"
 {{- end }}
 reclaimPolicy: Delete
 mountOptions:
