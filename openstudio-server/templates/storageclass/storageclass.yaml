@@ -17,8 +17,6 @@ parameters:
   storageaccounttype: StandardSSD_LRS
 {{- else }}
 provisioner: rancher.io/local-path
-parameters:
-  nodePath: /data/ssd
 {{- end }}
 reclaimPolicy: Delete
 mountOptions:
