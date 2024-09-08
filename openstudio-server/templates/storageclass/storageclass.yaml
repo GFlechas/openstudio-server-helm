@@ -6,22 +6,25 @@ metadata:
 provisioner: kubernetes.io/aws-ebs
 parameters:
   type: gp3
+volumeBindingMode: Immediate
 {{- else if eq .Values.provider.name "google" }}
 provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
+volumeBindingMode: Immediate
 {{- else if eq .Values.provider.name "azure" }}
 provisioner: kubernetes.io/azure-disk
 parameters:
   kind: Managed
   storageaccounttype: StandardSSD_LRS
+volumeBindingMode: Immediate
 {{- else }}
 provisioner: rancher.io/local-path
+volumeBindingMode: WaitForConsumer
 {{- end }}
 reclaimPolicy: Delete
 mountOptions:
   - debug
-volumeBindingMode: Immediate
 allowedTopologies:
 - matchLabelExpressions:
   - key: nodegroup
