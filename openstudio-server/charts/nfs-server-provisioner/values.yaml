@@ -102,3 +102,8 @@ affinity:
           operator: In
           values:
           - web-group
+      - matchExpressions:
+        - key: nodegroup
+          operator: In
+          values:
+            - app-group # use the label app-group in custom clusters where you want to be able to mix web and workers on some nodes.
