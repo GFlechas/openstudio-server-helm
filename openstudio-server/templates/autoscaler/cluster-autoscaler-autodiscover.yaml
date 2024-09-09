@@ -293,14 +293,18 @@ spec:
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
             - --scale-down-unneeded-time=5m
-            - --kubelet-insecure-tls  # Added for clusters using self signed certificates
+            # - --kubelet-insecure-tls  # Added for clusters using self signed certificates, commenting out to see if it's a path issue
           volumeMounts:
             - name: ssl-certs
-              mountPath: /etc/ssl/certs/ca-certificates.crt
+              mountPath: /etc/ssl/certs/ca-bundle.crt
+              subPath: ca-bundle.crt  # Add subPath to correctly reference the file
               readOnly: true
+          
           imagePullPolicy: "Always"
       volumes:
         - name: ssl-certs
           hostPath:
             path: "/etc/ssl/certs/ca-bundle.crt"
+            type: File  # Specify that it's a file, not a directory
+
 {{ end }}
