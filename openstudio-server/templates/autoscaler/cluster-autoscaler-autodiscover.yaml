@@ -293,6 +293,7 @@ spec:
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
             - --scale-down-unneeded-time=5m
+            - --kubelet-insecure-tls  # Added for clusters using self signed certificates
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt
