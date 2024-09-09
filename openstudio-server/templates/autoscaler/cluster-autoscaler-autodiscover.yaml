@@ -147,6 +147,11 @@ spec:
                     operator: In
                     values:
                       - web-group
+              - matchExpressions:
+                  - key: nodegroup
+                    operator: In
+                    values:
+                      - app-group # use the label app-group in custom clusters where you want to be able to mix web and workers on some nodes.
       serviceAccountName: cluster-autoscaler
       containers:
         - image: registry.k8s.io/autoscaling/cluster-autoscaler:v1.26.6
