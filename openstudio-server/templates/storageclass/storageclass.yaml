@@ -20,7 +20,7 @@ parameters:
 volumeBindingMode: Immediate
 {{- else }}
 provisioner: rancher.io/local-path
-volumeBindingMode: WaitForConsumer
+volumeBindingMode: WaitForFirstConsumer
 {{- end }}
 reclaimPolicy: Delete
 mountOptions:
