@@ -296,8 +296,7 @@ spec:
             # - --kubelet-insecure-tls  # Added for clusters using self signed certificates, commenting out to see if it's a path issue
           volumeMounts:
             - name: ssl-certs
-              mountPath: /etc/ssl/certs/ca-bundle.crt
-              subPath: ca-bundle.crt  # Add subPath to correctly reference the file
+              mountPath: /etc/ssl/certs/ca-certificates.crt
               readOnly: true
           
           imagePullPolicy: "Always"
@@ -305,6 +304,6 @@ spec:
         - name: ssl-certs
           hostPath:
             path: "/etc/ssl/certs/ca-bundle.crt"
-            type: File  # Specify that it's a file, not a directory
+
 
 {{ end }}
