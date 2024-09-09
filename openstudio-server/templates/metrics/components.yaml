@@ -1,4 +1,5 @@
 # Common Configuration
+{{- if not (lookup "v1" "ServiceAccount" "kube-system" "metrics-server") }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -7,6 +8,9 @@ metadata:
     k8s-app: metrics-server
   name: metrics-server
   namespace: kube-system
+{{- end }}
+
+{{- if not (lookup "rbac.authorization.k8s.io/v1" "ClusterRole" "" "system:aggregated-metrics-reader") }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -27,6 +31,9 @@ rules:
   - get
   - list
   - watch
+{{- end }}
+
+{{- if not (lookup "rbac.authorization.k8s.io/v1" "ClusterRole" "" "system:metrics-server") }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -50,6 +57,9 @@ rules:
   - get
   - list
   - watch
+{{- end }}
+
+{{- if not (lookup "rbac.authorization.k8s.io/v1" "RoleBinding" "kube-system" "metrics-server-auth-reader") }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -66,6 +76,9 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
+{{- end }}
+
+{{- if not (lookup "rbac.authorization.k8s.io/v1" "ClusterRoleBinding" "" "metrics-server:system:auth-delegator") }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -81,6 +94,9 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
+{{- end }}
+
+{{- if not (lookup "rbac.authorization.k8s.io/v1" "ClusterRoleBinding" "" "system:metrics-server") }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -96,6 +112,9 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
+{{- end }}
+
+{{- if not (lookup "v1" "Service" "kube-system" "metrics-server") }}
 ---
 apiVersion: v1
 kind: Service
@@ -112,6 +131,9 @@ spec:
     targetPort: https
   selector:
     k8s-app: metrics-server
+{{- end }}
+
+{{- if not (lookup "apps/v1" "Deployment" "kube-system" "metrics-server") }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -180,6 +202,7 @@ spec:
       volumes:
       - emptyDir: {}
         name: tmp-dir
+{{- end }}
 
 # Conditional APIService Configuration
 {{- if not (lookup "apiregistration.k8s.io/v1" "APIService" "kube-system" "v1beta1.metrics.k8s.io") }}
